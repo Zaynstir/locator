@@ -14,3 +14,4 @@
 1. go to a spot that will be the center point for the deserter detection and type “/locator setLoc”
 2. Type “/locator setRadius” to set the radius around the point chosen in the previous step for when players run outside of the radius, they are deserting.
 3. When you want to give a player the compass to track deserters type "/locator getsd" or "/locator getmsd". Then you right-click or give it to someone else to right-click and it will tell the user the cardinal directions of the deserters.
+4. 
