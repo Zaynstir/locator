@@ -26,8 +26,8 @@ public class Main extends JavaPlugin implements Listener{
 	boolean locate = true; //default: true
 	double errorPercentage = 0.0; //default 0
 	List<Player> deserters = new ArrayList<Player>();
-	Location setLocation = new Location(null, 0, 0, 0);
-	double desertDist = 5.0; 
+	Location setLocation = new Location(null, 0, 0, 0); //default (0,0,0)
+	double desertDist = 100.0; //default 100.0
 	
 	@Override
 	public void onEnable() {
@@ -49,7 +49,7 @@ public class Main extends JavaPlugin implements Listener{
 			if(p.hasPermission("locator.use")) {
 				if(args.length == 0) {
 					p.sendMessage(ChatColor.DARK_GREEN + "Locator is currently " + (locate ? "on." : "off."));
-					p.sendMessage(ChatColor.DARK_RED + "Usage: /locator [on/off/get/addPlayer/removePlayer/errorPer/setLocation/desertDist/listDeserters/help]");
+					p.sendMessage(ChatColor.DARK_RED + "Usage: /locator [on/off/getSD/getMSD/addPlayer/removePlayer/errorPercent/setLoc/setRadius/deserters/help]");
 					return true;
 				}
 				else if(args.length == 1) {
@@ -63,7 +63,7 @@ public class Main extends JavaPlugin implements Listener{
 						locate = false;
 						return true;
 					}
-					else if(args[0].equalsIgnoreCase("get")) {
+					else if(args[0].equalsIgnoreCase("getSD")) {
 						if(locate) {
 							if(p.getInventory().firstEmpty() == -1) {
 								p.sendMessage(ChatColor.DARK_RED + "Please empty an inventory slot");
@@ -76,7 +76,7 @@ public class Main extends JavaPlugin implements Listener{
 							}
 						}
 					}
-					else if(args[0].equalsIgnoreCase("getMega")) {
+					else if(args[0].equalsIgnoreCase("getMSD")) {
 						if(locate) {
 							if(p.getInventory().firstEmpty() == -1) {
 								p.sendMessage(ChatColor.DARK_RED + "Please empty an inventory slot");
@@ -97,20 +97,20 @@ public class Main extends JavaPlugin implements Listener{
 						p.sendMessage(ChatColor.DARK_RED + "Usage: /locator removePlayer [playername]");
 						return true;
 					}
-					else if(args[0].equalsIgnoreCase("errorPer")) {
-						p.sendMessage(ChatColor.DARK_RED + "Usage: /locator errorPer [percentage]");
+					else if(args[0].equalsIgnoreCase("errorPercent")) {
+						p.sendMessage(ChatColor.DARK_RED + "Usage: /locator errorPercent [percentage]");
 						return true;
 					}
-					else if(args[0].equalsIgnoreCase("desertDist")) {
-						p.sendMessage(ChatColor.DARK_RED + "Usage: /locator desertDist [num]");
+					else if(args[0].equalsIgnoreCase("setRadius")) {
+						p.sendMessage(ChatColor.DARK_RED + "Usage: /locator setRadius [num]");
 						return true;
 					}
-					else if(args[0].equalsIgnoreCase("setLocation")) {
+					else if(args[0].equalsIgnoreCase("setLoc")) {
 						setLocation = p.getLocation();
 						p.sendMessage(ChatColor.DARK_GREEN + "Location has been set");
 						return true;
 					}
-					else if(args[0].equalsIgnoreCase("listDeserters")) {
+					else if(args[0].equalsIgnoreCase("deserters")) {
 						String str = "";
 						for(Player d : deserters) {
 							str += d.getDisplayName() + ", ";
@@ -119,32 +119,33 @@ public class Main extends JavaPlugin implements Listener{
 						return true;
 					}
 					else if(args[0].equalsIgnoreCase("help")) {
-						p.sendMessage(ChatColor.DARK_GREEN + "Usage: /locator [on/off/get/addPlayer/removePlayer/errorPer/setLocation/desertDist/listDeserters/help]");
+						p.sendMessage(ChatColor.DARK_GREEN + "Usage: /locator [on/off/getSD/getMSD/addPlayer/removePlayer/errorPercent/setLoc/setRadius/deserters/help]");
 						p.sendMessage(ChatColor.GREEN + "/locator on - Allows for locator to run (On by default).");
 						p.sendMessage(ChatColor.DARK_GREEN + "/locator off - Disallows for locator to run.");
-						p.sendMessage(ChatColor.GREEN + "/locator get - Player recieves the \'Deserter Location\'.");
-						p.sendMessage(ChatColor.DARK_GREEN + "/locator addPlayer [playername] - Manually adds a player to the deserters list.");
-						p.sendMessage(ChatColor.GREEN + "/locator removePlayer [playername] - Manually removes a player to the deserters list.");
-						p.sendMessage(ChatColor.DARK_GREEN + "/locator errorPer [0.0 - 100.0] - Allows for the compass to not work all the time (0% error by Default).");
-						p.sendMessage(ChatColor.GREEN + "/locator setLocation - Sets the location to command issuer's postion to see who deserts ((0,0,0) by Default).");
-						p.sendMessage(ChatColor.DARK_GREEN + "/locator desertDist [# of Blocks] - Sets the radius around \'setLocation\' before a player is considered a deserter (100 Blocks by Default).");
-						p.sendMessage(ChatColor.GREEN + "/locator listDeserters - Lists all current deserters.");
-						p.sendMessage(ChatColor.DARK_GREEN + "/locator help - Do I need to tell you what this does?.");
+						p.sendMessage(ChatColor.GREEN + "/locator getSD - Player recieves the \'Scouting Device\'.");
+						p.sendMessage(ChatColor.DARK_GREEN + "/locator getMSD - Player recieves the \'Major Scouting Device\'.");
+						p.sendMessage(ChatColor.GREEN + "/locator addPlayer [playername] - Manually adds a player to the deserters list.");
+						p.sendMessage(ChatColor.DARK_GREEN + "/locator removePlayer [playername] - Manually removes a player to the deserters list.");
+						p.sendMessage(ChatColor.GREEN + "/locator errorPercent [0.0 - 100.0] - Allows for the compass to not work all the time (0% error by Default).");
+						p.sendMessage(ChatColor.DARK_GREEN + "/locator setLoc - Sets the location to command issuer's postion to see who deserts ((0,0,0) by Default).");
+						p.sendMessage(ChatColor.GREEN + "/locator setRadius [# of Blocks] - Sets the radius around \'setLoc\' before a player is considered a deserter (100 Blocks by Default).");
+						p.sendMessage(ChatColor.DARK_GREEN + "/locator deserters - Lists all current deserters.");
+						p.sendMessage(ChatColor.GREEN + "/locator help - Do I need to tell you what this does?.");
 						return true;
 					}
 					else {
-						p.sendMessage(ChatColor.DARK_RED + "Usage: /locator [on/off/get/addPlayer/removePlayer/errorPer/setLocation/desertDist/listDeserters/help]");
+						p.sendMessage(ChatColor.DARK_RED + "Usage: /locator [on/off/getSD/getMSD/addPlayer/removePlayer/errorPercent/setLoc/setRadius/deserters/help]");
 						return true;
 					}
 				}
 				else if(args.length == 2) {
-					if(args[0].equalsIgnoreCase("desertDist")) {
+					if(args[0].equalsIgnoreCase("setRadius")) {
 						try {
 							double amt = Integer.parseInt(args[1]);
 							desertDist = amt;
-							p.sendMessage(ChatColor.GREEN + "Deseter Distance has been updated to " + desertDist + " blocks.");
+							p.sendMessage(ChatColor.GREEN + "Deserter Distance has been updated to " + desertDist + " blocks.");
 						}catch(Exception e) {
-							p.sendMessage(ChatColor.DARK_RED + "ERROR: Input may not be a number. Usage: /locator desertDist [whole number]");
+							p.sendMessage(ChatColor.DARK_RED + "ERROR: Input may not be a number. Usage: /locator setRadius [whole number]");
 						}
 						return true;
 					}
@@ -156,7 +157,7 @@ public class Main extends JavaPlugin implements Listener{
 								p.sendMessage(ChatColor.DARK_RED + "ERROR: Player may not exist. Usage: /locator addPlayer [playername]");
 							}
 							else if(deserters.contains(deserter)) {
-								p.sendMessage(ChatColor.RED + "Player " + deserter + ", is already on the deserter's list.");
+								p.sendMessage(ChatColor.RED + "Player " + deserter.getName() + ", is already on the deserter's list.");
 							}
 							else {
 								deserters.add(deserter);
@@ -174,11 +175,11 @@ public class Main extends JavaPlugin implements Listener{
 								p.sendMessage(ChatColor.DARK_RED + "ERROR: Player may not exist. Usage: /locator removePlayer [playername]");
 							}
 							else if(!deserters.contains(deserter)) {
-								p.sendMessage(ChatColor.RED + "Player " + deserter + ", does not exist on the deserter's list.");
+								p.sendMessage(ChatColor.RED + "Player " + deserter.getName() + ", does not exist on the deserter's list.");
 							}
 							else {
 								deserters.add(deserter);
-								p.sendMessage(ChatColor.GREEN + "Player [" + args[1] + "] has been removed to the deserters list.");
+								p.sendMessage(ChatColor.GREEN + "Player [" + deserter.getName() + "] has been removed to the deserters list.");
 							}
 						}catch(Exception e) {
 							p.sendMessage(ChatColor.DARK_RED + "ERROR: Player may not exist. Usage: /locator removePlayer [playername]");
@@ -191,13 +192,13 @@ public class Main extends JavaPlugin implements Listener{
 							errorPercentage = perc;
 							p.sendMessage(ChatColor.GREEN + "Error Percentage has been updated to " + errorPercentage + "%.");
 						}catch(Exception e) {
-							p.sendMessage(ChatColor.DARK_RED + "ERROR: Input may not be a number. Usage: /locator errorPer [0.0-100.0]");
+							p.sendMessage(ChatColor.DARK_RED + "ERROR: Input may not be a number. Usage: /locator errorPercent [0.0-100.0]");
 						}
 						return true;
 					}
 				}
 				else if(args.length > 2) {
-					p.sendMessage(ChatColor.DARK_RED + "Usage: /locator [on/off/get/addPlayer/removePlayer/errorPer/setLocation/desertDist/listDeserters/help]");
+					p.sendMessage(ChatColor.DARK_RED + "Usage: /locator [on/off/getSD/getMSD/addPlayer/removePlayer/errorPercent/setLoc/setRadius/deserters/help]");
 					return true;
 				}
 			}
@@ -207,36 +208,7 @@ public class Main extends JavaPlugin implements Listener{
 			}
 		}
 		
-		if(label.equalsIgnoreCase("addPlayer")) {
-			if(!(sender instanceof Player)) {
-				sender.sendMessage("ERROR: Only Players can use this command.");
-				return true;
-			}
-			Player p = (Player) sender;
-			if(p.hasPermission("addPlayer.use")) {
-				if(args.length == 1) {
-					try {
-						Player deserter = Bukkit.getPlayer(args[0]);
-						p.sendMessage("" + Bukkit.getPlayer(args[0]));
-						if(deserter == null) {
-							p.sendMessage(ChatColor.DARK_RED + "ERROR: Player may not exist. Usage: /locator addPlayer [playername]");
-						}
-						else if(deserters.contains(deserter)) {
-							p.sendMessage(ChatColor.RED + "Player " + deserter + ", is already on the deserter's list.");
-						}
-						else {
-							deserters.add(deserter);
-							p.sendMessage(ChatColor.GREEN + "Player [" + deserter.getName() + "] has been added to the deserters list.");
-						}
-					}catch(Exception e) {
-						p.sendMessage(ChatColor.DARK_RED + "ERROR: Player may not exist. Usage: /locator addPlayer [playername]");
-					}
-					return true;
-				}
-				p.sendMessage(ChatColor.DARK_RED + "Usage: /locator addPlayer [playername]");
-				return true;
-			}
-		}
+		
 		return false;
 	}
 	
@@ -278,7 +250,7 @@ public class Main extends JavaPlugin implements Listener{
 			if(dist > desertDist) {
 				if(!deserters.contains(p)) {
 					deserters.add(p);
-					p.sendMessage(ChatColor.RED + "WARNING: You are deserting.");
+					p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "WARNING: You are deserting.");
 				}
 			}
 			else if(dist <= desertDist) {
