@@ -2,7 +2,8 @@ main: me.Zaynstir.Bounty.Main
 name: Locator
 version: 1
 author: Zaynstir
-api-version: 1.13
+authors: [Zaynstir, Peaceyo]
+api-version: 1.15.2
 
 commands:
   locator:
