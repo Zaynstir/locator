@@ -70,8 +70,21 @@ public class Main extends JavaPlugin implements Listener{
 								return true;
 							}
 							else {
-								p.getInventory().addItem(getItem());
+								p.getInventory().addItem(getLocator());
 								p.sendMessage(ChatColor.YELLOW + "You have recieved the Locator");
+								return true;
+							}
+						}
+					}
+					else if(args[0].equalsIgnoreCase("getMega")) {
+						if(locate) {
+							if(p.getInventory().firstEmpty() == -1) {
+								p.sendMessage(ChatColor.DARK_RED + "Please empty an inventory slot");
+								return true;
+							}
+							else {
+								p.getInventory().addItem(getMegaLocator());
+								p.sendMessage(ChatColor.YELLOW + "You have recieved the MegaLocator");
 								return true;
 							}
 						}
@@ -227,14 +240,28 @@ public class Main extends JavaPlugin implements Listener{
 		return false;
 	}
 	
-	public ItemStack getItem() {
+	public ItemStack getLocator() {
 		ItemStack locator = new ItemStack(Material.COMPASS);
 		ItemMeta meta = locator.getItemMeta();
 		
-		meta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "Deserter Locator");
+		meta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "Scouting Device");
 		List<String> lore = new ArrayList<String>();
 		lore.add("");
-		lore.add(ChatColor.GOLD + "" +ChatColor.ITALIC + "Right-click to see the general direction of the deserters");
+		lore.add(ChatColor.GOLD + "" +ChatColor.ITALIC + "Right-click to see the general direction of the deserters. Range: 250");
+		meta.setLore(lore);
+		locator.setItemMeta(meta);
+		
+		return locator;
+	}
+	
+	public ItemStack getMegaLocator() {
+		ItemStack locator = new ItemStack(Material.COMPASS);
+		ItemMeta meta = locator.getItemMeta();
+		
+		meta.setDisplayName(ChatColor.GOLD + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Major Scouting Device");
+		List<String> lore = new ArrayList<String>();
+		lore.add("");
+		lore.add(ChatColor.GOLD + "" +ChatColor.ITALIC + "Right-click to see the general direction of the deserters. Range: 1000");
 		meta.setLore(lore);
 		locator.setItemMeta(meta);
 		
@@ -267,10 +294,10 @@ public class Main extends JavaPlugin implements Listener{
 	public void onPlayerInteractEvent(PlayerInteractEvent e) {
 		if(locate) {
 			if(e.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.COMPASS)) {
-				if(e.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().contains("Deserter Locator")) {
+				if(e.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().contains("Scouting Device")) {
 					if(e.getPlayer().getInventory().getItemInMainHand().getItemMeta().hasLore()) {
 						Player p = (Player) e.getPlayer();
-						p.getInventory().removeItem(getItem());
+						p.getInventory().removeItem(getLocator());
 						Integer[] cardinals = {0,0,0,0,0,0,0,0};
 						Location loc = p.getLocation();
 						boolean flag = false;
@@ -298,6 +325,47 @@ public class Main extends JavaPlugin implements Listener{
 						}
 						if(!flag) {
 							p.sendMessage(ChatColor.RED + "No players found within 250 blocks.");
+						}
+						else {
+							for(int i = 0; i < 8; i++) {
+								if(cardinals[i] != 0) {
+									p.sendMessage(ChatColor.DARK_GREEN + "You detect " + cardinals[i] + " people " + idxToCardinal(i) + " from here.");
+								}
+							}
+						}
+					}
+				}
+				else if(e.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().contains("Major Scouting Device")) {
+					if(e.getPlayer().getInventory().getItemInMainHand().getItemMeta().hasLore()) {
+						Player p = (Player) e.getPlayer();
+						//p.getInventory().removeItem(getLocator());
+						Integer[] cardinals = {0,0,0,0,0,0,0,0};
+						Location loc = p.getLocation();
+						boolean flag = false;
+						for(Player deserter: deserters) {
+							if(deserter != p) {
+								Location dloc = deserter.getLocation();
+								int d = (int) Math.ceil(Math.sqrt(Math.pow(dloc.getZ() - loc.getZ(),2) + Math.pow(dloc.getY() - loc.getY(),2) + Math.pow(dloc.getX() - loc.getX(),2)));
+								if(d <= 1000) {
+									flag = true;
+									int dist = (int) Math.ceil(Math.sqrt(Math.pow(dloc.getZ() - loc.getZ(),2) + Math.pow(dloc.getX() - loc.getX(),2)));
+									deserter.sendMessage(ChatColor.DARK_RED + "" + ChatColor.ITALIC + "You feel as though you are being watched.");
+									Random r = new Random();
+									if(r.nextDouble()*100 < errorPercentage) {
+										cardinals[r.nextInt(8)] += 1;
+									}
+									else {
+										Location opploc = loc.add(0,0,-250);
+										int opp = (int) Math.ceil(Math.sqrt(Math.pow(dloc.getZ() - opploc.getZ(),2) + Math.pow(dloc.getX() - opploc.getX(),2)));
+										double angle = Math.toDegrees(Math.acos((Math.pow(250, 2) + Math.pow(dist, 2) - Math.pow(opp, 2))/(2 * 250 * dist)));
+										double result = Math.floor(angle/22.5);
+										cardinals[(int) Math.ceil(result/2)] += 1;
+									}
+								}
+							}
+						}
+						if(!flag) {
+							p.sendMessage(ChatColor.RED + "No players found within 1000 blocks.");
 						}
 						else {
 							for(int i = 0; i < 8; i++) {
