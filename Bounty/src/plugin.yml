@@ -3,7 +3,7 @@ name: Locator
 version: 1
 author: Zaynstir
 authors: [Zaynstir, Peaceyo]
-api-version: 1.15.2
+api-version: 1.15
 
 commands:
   locator:
