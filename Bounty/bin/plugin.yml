@@ -1,0 +1,9 @@
+main: me.Zaynstir.Bounty.Main
+name: Locator
+version: 1
+author: Zaynstir
+api-version: 1.13
+
+commands:
+  locator:
+    description: overall tool to track deserters.
