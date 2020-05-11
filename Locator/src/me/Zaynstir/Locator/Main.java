@@ -266,7 +266,7 @@ public class Main extends JavaPlugin implements Listener{
 	public void onPlayerInteractEvent(PlayerInteractEvent e) {
 		if(locate) {
 			if(e.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.COMPASS)) {
-				if(e.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().contains("Scouting Device")) {
+				if(e.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().contains("Scouting Device") && !(e.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().contains("Major Scouting Device"))) {
 					if(e.getPlayer().getInventory().getItemInMainHand().getItemMeta().hasLore()) {
 						Player p = (Player) e.getPlayer();
 						p.getInventory().removeItem(getLocator());
